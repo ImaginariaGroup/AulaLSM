@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual envs
+venv/
+.venv/
+env/
+
+# Training data (large binary files — use import_android_data.py to regenerate)
+data/signs/**/*.npy
+
+# Trained model
+models/*.pkl
+models/*.joblib
+
+# MediaPipe model cache
+*.task
+assets/models/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / env
+.env
+*.env

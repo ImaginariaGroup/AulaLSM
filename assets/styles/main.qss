@@ -1,0 +1,199 @@
+/* LSM Interpreter — Dark Theme */
+
+* {
+    font-family: "Segoe UI", "Inter", sans-serif;
+    font-size: 13px;
+    color: #E0E0F0;
+    background-color: #0D0D0F;
+}
+
+QMainWindow, QWidget { background-color: #0D0D0F; }
+
+QGroupBox {
+    background-color: #13131F;
+    border: 1px solid #252545;
+    border-radius: 8px;
+    margin-top: 14px;
+    padding: 12px 8px 8px 8px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 12px;
+    padding: 0 6px;
+    color: #6870A0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+/* Big letter / sign display */
+QLabel#bigLetter, QLabel#bigSign {
+    color: #00F5D4;
+    background: transparent;
+    padding: 8px;
+}
+
+QLabel#signDesc, QLabel#hintText {
+    color: #7080A0;
+    font-size: 12px;
+    background: transparent;
+}
+
+QLabel#confText {
+    color: #9090B0;
+    font-size: 12px;
+    background: transparent;
+}
+
+QLabel#statusLabel {
+    color: #F5A623;
+    font-size: 13px;
+    font-weight: 600;
+    background: transparent;
+}
+
+/* Text output */
+QLabel#textOutput {
+    color: #E0E0F0;
+    background-color: #0A0A15;
+    border: 1px solid #252545;
+    border-radius: 6px;
+    padding: 8px;
+    min-height: 60px;
+}
+
+/* Camera feed */
+QLabel#cameraFeed {
+    background-color: #05050A;
+    border: 1px solid #1E1E38;
+    border-radius: 6px;
+}
+
+/* Primary button */
+QPushButton#primaryBtn {
+    background-color: #00F5D420;
+    border: 1px solid #00F5D460;
+    border-radius: 6px;
+    color: #00F5D4;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+QPushButton#primaryBtn:hover {
+    background-color: #00F5D440;
+    border-color: #00F5D4;
+}
+QPushButton#primaryBtn:pressed {
+    background-color: #00F5D460;
+}
+
+/* Danger button — destructive actions (delete/reset) */
+QPushButton#dangerBtn {
+    background-color: #2A0A0A;
+    border: 1px solid #8B2020;
+    border-radius: 6px;
+    color: #FF6060;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+}
+QPushButton#dangerBtn:hover {
+    background-color: #3D0F0F;
+    border-color: #FF4444;
+    color: #FF8888;
+}
+QPushButton#dangerBtn:pressed {
+    background-color: #550A0A;
+    border-color: #FF2222;
+}
+
+/* Secondary button */
+QPushButton#secondaryBtn {
+    background-color: #1A1A2E;
+    border: 1px solid #333355;
+    border-radius: 6px;
+    color: #9090B0;
+    padding: 10px 16px;
+}
+QPushButton#secondaryBtn:hover {
+    border-color: #6060AA;
+    color: #C0C0E0;
+}
+
+/* Rotation buttons */
+QPushButton#rotBtn {
+    background-color: #14142A;
+    border: 1px solid #2A2A48;
+    border-radius: 5px;
+    color: #7080A0;
+    padding: 5px 8px;
+    font-size: 11px;
+}
+QPushButton#rotBtn:hover {
+    border-color: #00F5D4;
+    color: #00F5D4;
+}
+
+/* Sign list */
+QListWidget#signList {
+    background-color: #0A0A15;
+    border: 1px solid #1E1E38;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #8090B0;
+}
+QListWidget#signList::item:selected {
+    background-color: #00F5D420;
+    color: #00F5D4;
+}
+
+/* Progress bar — muestras */
+QProgressBar {
+    background-color: #0A0A15;
+    border: 1px solid #252545;
+    border-radius: 4px;
+    text-align: center;
+    color: #9090C0;
+    height: 20px;
+}
+QProgressBar::chunk {
+    background-color: #00F5D4;
+    border-radius: 3px;
+}
+
+/* Interval countdown bar — se llena antes de cada captura */
+QProgressBar#intervalBar {
+    background-color: #0A0A15;
+    border: 1px solid #1A1A38;
+    border-radius: 3px;
+    height: 8px;
+}
+QProgressBar#intervalBar::chunk {
+    background-color: #F5A623;
+    border-radius: 3px;
+}
+
+/* Status bar */
+QStatusBar {
+    background-color: #08080F;
+    border-top: 1px solid #1A1A30;
+    color: #5060A0;
+    font-size: 11px;
+}
+
+/* Splitter */
+QSplitter::handle { background-color: #252545; width: 2px; }
+
+/* Scrollbar */
+QScrollBar:vertical {
+    background-color: #0D0D0F;
+    width: 7px;
+    border-radius: 3px;
+}
+QScrollBar::handle:vertical {
+    background-color: #2D2D50;
+    border-radius: 3px;
+    min-height: 24px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
