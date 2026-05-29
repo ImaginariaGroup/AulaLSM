@@ -315,22 +315,24 @@ async function startCamera() {
     });
     video.srcObject = currentStream;
     await new Promise(resolve => { video.onloadedmetadata = resolve; });
-    // Sync canvas resolution to video stream size
-    canvas.width  = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // Canvas internal resolution = container px size (not stream size).
+    // This ensures 1:1 mapping with the CSS-displayed area so the
+    // cover-scaled coordinate transform below works correctly.
+    syncCanvasSize();
   } catch (err) {
     loadingMsg.textContent = "Error camara: " + err.message;
     throw err;
   }
 }
 
-window.addEventListener("resize", () => {
-  // canvas resolution stays tied to video stream — no height override needed
-  if (video.videoWidth) {
-    canvas.width  = video.videoWidth;
-    canvas.height = video.videoHeight;
-  }
-});
+// Keep canvas resolution in sync with its CSS size on rotation / resize
+function syncCanvasSize() {
+  const w = camWrap.clientWidth  || camWrap.offsetWidth;
+  const h = camWrap.clientHeight || camWrap.offsetHeight;
+  if (w > 0 && h > 0) { canvas.width = w; canvas.height = h; }
+}
+window.addEventListener("resize", syncCanvasSize);
+new ResizeObserver(syncCanvasSize).observe(camWrap);
 
 btnFlip.addEventListener("click", async () => {
   facingMode = facingMode === "user" ? "environment" : "user";
@@ -360,19 +362,34 @@ async function initMediaPipe() {
 }
 
 // ── Drawing ───────────────────────────────────────────────────────────────────
+// MediaPipe returns landmarks normalized 0-1 in video-stream space.
+// The video element uses object-fit:cover, which scales the stream uniformly
+// (same factor on both axes) and crops the overflow.  We must apply the same
+// transform to the canvas coordinates so the skeleton stays on the hand.
 function drawHand(landmarks) {
-  const w = canvas.width, h = canvas.height;
+  const cw = canvas.width,  ch = canvas.height;
+  const vw = video.videoWidth, vh = video.videoHeight;
+  if (!vw || !vh) return;
+
+  // Replicate object-fit:cover: uniform scale to FILL the container, crop excess
+  const scale = Math.max(cw / vw, ch / vh);
+  const ox    = (cw - vw * scale) / 2;   // negative → the video is cropped here
+  const oy    = (ch - vh * scale) / 2;
+
+  const px = lm => lm.x * vw * scale + ox;
+  const py = lm => lm.y * vh * scale + oy;
+
   ctx.strokeStyle = "#00F5D4";
-  ctx.lineWidth   = 2;
+  ctx.lineWidth   = 2.5;
   for (const [a, b] of CONNECTIONS) {
     ctx.beginPath();
-    ctx.moveTo(landmarks[a].x * w, landmarks[a].y * h);
-    ctx.lineTo(landmarks[b].x * w, landmarks[b].y * h);
+    ctx.moveTo(px(landmarks[a]), py(landmarks[a]));
+    ctx.lineTo(px(landmarks[b]), py(landmarks[b]));
     ctx.stroke();
   }
   for (const lm of landmarks) {
     ctx.beginPath();
-    ctx.arc(lm.x * w, lm.y * h, 4, 0, 2 * Math.PI);
+    ctx.arc(px(lm), py(lm), 5, 0, 2 * Math.PI);
     ctx.fillStyle = "#FFFFFF";
     ctx.fill();
   }
