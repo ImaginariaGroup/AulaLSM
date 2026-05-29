@@ -24,12 +24,15 @@
     /* ── Layout: camera top, controls scrollable below ── */
     body { display: flex; flex-direction: column; height: 100dvh; }
 
-    /* ── Camera ── */
+    /* ── Camera — capped at 38dvh so controls always show ── */
     #cam-wrap {
       position: relative;
       width: 100%;
+      height: 38dvh;
+      max-height: 38dvh;
       background: #000;
       flex-shrink: 0;
+      overflow: hidden;
     }
     #video  { display: block; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
     #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -68,8 +71,9 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Controls panel ── */
-    #controls { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    /* ── Controls panel — min-height:0 is critical for flex+scroll ── */
+    #controls { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+                display: flex; flex-direction: column; }
 
     .panel { padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); }
 
@@ -120,18 +124,18 @@
     }
     #btn-skip:active { background: #252545; }
 
-    /* Sign grid */
-    #grid-section { flex: 1; padding: 10px 14px; overflow-y: auto; }
+    /* Sign grid — natural height inside scrollable #controls */
+    #grid-section { padding: 10px 14px 8px; flex-shrink: 0; }
     #grid-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
-    .sign-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 6px; }
+    .sign-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 7px; }
     .chip {
-      background: #0A0A15; border: 1px solid var(--border); border-radius: 6px;
-      padding: 6px 4px; text-align: center; cursor: pointer; transition: border-color 0.12s;
+      background: #0A0A15; border: 1px solid var(--border); border-radius: 7px;
+      padding: 8px 4px 6px; text-align: center; cursor: pointer; transition: border-color 0.12s;
       -webkit-tap-highlight-color: transparent;
     }
     .chip:active { background: #12121F; }
-    .chip .cl { font-size: 15px; font-weight: 700; color: var(--muted); }
-    .chip .cc { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .chip .cl { font-size: 17px; font-weight: 700; color: var(--muted); line-height: 1; }
+    .chip .cc { font-size: 10px; color: var(--muted); margin-top: 3px; }
     .chip.done  { border-color: var(--cyan); }
     .chip.done .cl, .chip.done .cc { color: var(--cyan); }
     .chip.active { border-color: var(--orange); background: rgba(245,166,35,0.08); }
@@ -311,12 +315,9 @@ async function startCamera() {
     });
     video.srcObject = currentStream;
     await new Promise(resolve => { video.onloadedmetadata = resolve; });
-    // Sync canvas size to video
+    // Sync canvas resolution to video stream size
     canvas.width  = video.videoWidth;
     canvas.height = video.videoHeight;
-    // Match cam-wrap height to keep aspect ratio
-    const aspect = video.videoHeight / video.videoWidth;
-    camWrap.style.height = `${camWrap.offsetWidth * aspect}px`;
   } catch (err) {
     loadingMsg.textContent = "Error camara: " + err.message;
     throw err;
@@ -324,9 +325,10 @@ async function startCamera() {
 }
 
 window.addEventListener("resize", () => {
+  // canvas resolution stays tied to video stream — no height override needed
   if (video.videoWidth) {
-    const aspect = video.videoHeight / video.videoWidth;
-    camWrap.style.height = `${camWrap.offsetWidth * aspect}px`;
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
   }
 });
 
@@ -502,7 +504,7 @@ function showCurrentSign() {
     return;
   }
   const label = LABELS[signIndex];
-  lblLetter.textContent = label.length === 1 ? label : label.slice(0, 2);
+  lblLetter.textContent = label.length <= 3 ? label : label.slice(0, 3);
   lblName.textContent   = label;
   lblDesc.textContent   = SIGNS[label];
   const count           = sampleCount(label);
@@ -523,8 +525,9 @@ function buildGrid() {
     const chip = document.createElement("div");
     chip.className = "chip";
     chip.id        = `chip-${label}`;
+    const short = label.length <= 3 ? label : label.slice(0, 3);
     chip.innerHTML =
-      `<div class="cl">${label.length === 1 ? label : label.slice(0,2)}</div>` +
+      `<div class="cl">${short}</div>` +
       `<div class="cc" id="cc-${label}">0/${SAMPLES_PER_SIGN}</div>`;
     chip.addEventListener("click", () => {
       recording = false; buffer = [];
